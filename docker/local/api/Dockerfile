@@ -3,24 +3,34 @@ LABEL authors="Ashish"
 
 # argument for  directory, user group, user
 ARG HOME_DIR=/todo
-ARG GROUP=todo
-ARG USER=todo
+ARG GROUP=todos
+ARG USER=todos
 
 WORKDIR ${HOME_DIR}
 
 RUN groupadd -r ${GROUP} \
     && useradd -r -g ${GROUP} -d ${HOME_DIR} -m ${USER}
 
-COPY --chown=${USER}:${GROUP} . ${HOME_DIR}
+
+
 
 COPY requirements.txt  .
 
 RUN --mount=type=bind,from=wheels,source=/,target=/wheels \
     pip install --no-index --find-links=/wheels -r requirements.txt
 
-RUN chmod +x ${HOME_DIR}/scripts/entrypoint.sh
+COPY --chown=${USER}:${GROUP} . ${HOME_DIR}
 
 
-USER ${APP_USER}
+RUN mkdir -p ${HOME_DIR}/logs && \
+  chown -R ${USER}:${GROUP} ${HOME_DIR}/logs && \
+  chmod 777 ${HOME_DIR}/logs
+
+
+RUN chmod +x scripts/entrypoint.sh
+
+
+
+USER ${USER}
 
 ENTRYPOINT ["scripts/entrypoint.sh"]

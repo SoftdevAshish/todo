@@ -1,4 +1,16 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    env_file:
+      - .envs/.env.local
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - todo
   todo:
     build:
       context: .
@@ -9,6 +21,18 @@ services:
     container_name: todo_api
     ports:
       - "8000:8000"
+    volumes:
+      - .:/todo
+      - ./logs:/todo/logs
     env_file:
       - .envs/.env.local
     restart: unless-stopped
+    depends_on:
+      - postgres
+    networks:
+      - todo
+networks:
+  todo:
+    driver: bridge
+volumes:
+  postgres_data:
