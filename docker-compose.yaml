@@ -1,0 +1,14 @@
+services:
+  todo:
+    build:
+      context: .
+      dockerfile: docker/local/api/Dockerfile
+      additional_contexts:
+        wheels: ../wheels
+    image: todo:latest
+    container_name: todo_api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .envs/.env.local
+    restart: unless-stopped

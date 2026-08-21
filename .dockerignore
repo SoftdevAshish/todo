@@ -2,7 +2,7 @@
 .idea/
 .vscode
 .envs/*
-.envs/.env.example
+!.envs/.env.example
 
 
 # Byte-compiled / optimized / DLL files
